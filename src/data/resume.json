@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "profile": {
+    "name": "你的姓名",
+    "school": "示例大学｜计算机科学与技术｜本科｜20XX.09 - 20XX.06",
+    "email": "hello@example.com",
+    "phone": "",
+    "github": "https://github.com/example",
+    "photo": ""
+  },
+  "sections": [
+    {
+      "id": "skills",
+      "title": "专业技能",
+      "kind": "list",
+      "visible": true,
+      "items": [
+        "掌握的技术：填写能够独立使用并解释原理的语言、框架和工具，按熟练程度排序。",
+        "熟悉的技术：结合实际项目说明应用场景，避免只列出工具名称。",
+        "了解的技术：填写接触过的基础知识，使用符合实际掌握程度的措辞。"
+      ],
+      "entries": []
+    },
+    {
+      "id": "internship",
+      "title": "实习经历",
+      "kind": "experience",
+      "visible": true,
+      "items": [],
+      "entries": [
+        {
+          "id": "internship-example",
+          "title": "公司名称",
+          "role": "实习岗位",
+          "date": "20XX.06 - 20XX.09",
+          "stack": "填写实际使用的技术 / 框架 / 数据库",
+          "description": "用一句话说明产品服务的用户、业务场景和主要功能。",
+          "bullets": [
+            "负责的功能：说明你具体完成的模块或接口，以及它解决的业务问题。",
+            "关键实现：描述技术方案、选择原因和需要处理的边界情况。",
+            "协作与验证：明确个人职责和协作范围，填写有依据的测试或改进成果。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "projects",
+      "title": "项目经历",
+      "kind": "experience",
+      "visible": true,
+      "items": [],
+      "entries": [
+        {
+          "id": "project-example",
+          "title": "项目名称",
+          "role": "你的角色",
+          "date": "20XX.03 - 20XX.06",
+          "stack": "填写项目实际使用的技术",
+          "description": "简要介绍项目目标与使用场景。",
+          "bullets": [
+            "核心功能：说明自己完成了什么，以及解决了什么问题。",
+            "技术难点：描述遇到的约束、采用的方案和验证方式。",
+            "项目成果：只填写真实、可解释的结果，不使用未经验证的性能数字。"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "awards",
+      "title": "荣誉与证书",
+      "kind": "list",
+      "visible": true,
+      "items": ["奖项 / 证书名称｜级别｜获得时间（按实际情况填写或删除）"],
+      "entries": []
+    }
+  ],
+  "theme": {
+    "preset": "blue",
+    "accent": "#174a70",
+    "font": "sans",
+    "fontSize": 10,
+    "photo": false,
+    "autoFit": true,
+    "spacing": "balanced"
+  }
+}
