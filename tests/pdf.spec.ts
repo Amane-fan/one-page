@@ -1,5 +1,10 @@
 import { test, expect, type Page } from "@playwright/test";
-import { PDFDocument } from "pdf-lib";
+import {
+  PDFDocument,
+  PDFArray,
+  PDFRawStream,
+  decodePDFRawStream,
+} from "pdf-lib";
 import { mkdirSync, writeFileSync } from "node:fs";
 
 async function mockPicker(
@@ -143,4 +148,73 @@ test("编辑、备份和生成 PDF 不发送简历到网络", async ({ page }) =
   });
   expect(external).toEqual([]);
   expect(mutations).toEqual([]);
+});
+
+test("数字、联系方式和加粗边界的 PDF 字符位置与预览一致", async ({ page }) => {
+  test.setTimeout(90000);
+  await mockPicker(page);
+  for (const family of ["sans", "serif"]) {
+    const expected = await page.evaluate(async (family) => {
+      const paper = document.querySelector<HTMLElement>(".paper")!;
+      paper.classList.remove("font-sans", "font-serif");
+      paper.classList.add("font-" + family);
+      paper.querySelector(".contact")!.innerHTML =
+        '<span>邮箱：<a href="mailto:202601234@example.com">202601234@example.com</a></span><span>电话：<a href="tel:000-0000-0000">000-0000-0000</a></span>';
+      paper.querySelector(".resume-list")!.innerHTML =
+        "<p>2026 ACM-ICPC 全国邀请赛（武汉）<strong>铜奖</strong>（2026.05）</p><p>" +
+        "测试数字 2026 和普通文字<strong>加粗文字</strong>衔接。".repeat(10) +
+        "</p>";
+      await document.fonts.ready;
+      const clone = paper.cloneNode(true) as HTMLElement;
+      clone.style.cssText =
+        paper.style.cssText +
+        ";position:fixed;left:-10000px;top:0;transform:none;";
+      document.body.appendChild(clone);
+      const origin = clone.getBoundingClientRect();
+      const walker = document.createTreeWalker(clone, NodeFilter.SHOW_TEXT);
+      const range = document.createRange();
+      const positions: number[] = [];
+      while (walker.nextNode()) {
+        const node = walker.currentNode as Text;
+        let offset = 0;
+        for (const char of node.data) {
+          range.setStart(node, offset);
+          offset += char.length;
+          range.setEnd(node, offset);
+          const r = range.getBoundingClientRect();
+          if (r.width && r.height && char !== "\n" && char !== "\r")
+            positions.push(((r.left - origin.left) * 72) / 96);
+        }
+      }
+      clone.remove();
+      return positions;
+    }, family);
+    await page.getByRole("button", { name: /导出 PDF/ }).click();
+    await expect(page.getByRole("alert")).toContainText("PDF 已保存", {
+      timeout: 30000,
+    });
+    const bytes = Buffer.from(
+      await page.evaluate(() => (window as unknown as { saved: string }).saved),
+      "base64",
+    );
+    const pdf = await PDFDocument.load(bytes);
+    const streams = pdf.getPage(0).node.Contents() as PDFArray;
+    let content = "";
+    for (let i = 0; i < streams.size(); i++) {
+      const stream = streams.lookup(i, PDFRawStream);
+      content += Buffer.from(decodePDFRawStream(stream).decode()).toString();
+    }
+    const actual = [...content.matchAll(/1 0 0 1 ([\d.-]+) ([\d.-]+) Tm/g)].map(
+      (m) => Number(m[1]),
+    );
+    expect(actual).toHaveLength(expected.length);
+    actual.forEach((x, i) =>
+      expect(Math.abs(x - expected[i])).toBeLessThan(0.02),
+    );
+    mkdirSync("artifacts", { recursive: true });
+    writeFileSync(`artifacts/spacing-${family}.pdf`, bytes);
+    await page
+      .locator(".paper")
+      .screenshot({ path: `artifacts/spacing-${family}-preview.png` });
+  }
 });

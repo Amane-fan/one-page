@@ -1,12 +1,4 @@
-import {
-  PDFDocument,
-  PDFName,
-  PDFString,
-  rgb,
-  pushGraphicsState,
-  popGraphicsState,
-  concatTransformationMatrix,
-} from "pdf-lib";
+import { PDFDocument, PDFName, PDFString, rgb } from "pdf-lib";
 import fontkit from "@pdf-lib/fontkit";
 
 const PT = 72 / 96;
@@ -110,71 +102,24 @@ export async function createResumePdf(
       const font = Number(style.fontWeight) >= 600 ? bold : regular;
       const descent =
         font.heightAtSize(size) - font.heightAtSize(size, { descender: false });
-      if (parent.tagName === "TIME") {
-        let offset = 0;
-        for (const character of node.data) {
-          range.setStart(node, offset);
-          offset += character.length;
-          range.setEnd(node, offset);
-          const r = range.getBoundingClientRect();
-          if (r.width)
-            page.drawText(character, {
-              x: (r.left - origin.left) * PT,
-              y: HEIGHT - (r.bottom - origin.top) * PT + descent,
-              size,
-              font,
-              ...color(style.color),
-            });
-        }
-        continue;
-      }
-      let offset = 0,
-        line = "",
-        first: DOMRect | null = null,
-        right = 0;
-      const flush = () => {
-        if (first && line) {
-          const width = font.widthOfTextAtSize(line, size);
-          const scale = width ? ((right - first.left) * PT) / width : 1;
-          page.pushOperators(
-            pushGraphicsState(),
-            concatTransformationMatrix(
-              scale,
-              0,
-              0,
-              1,
-              (first.left - origin.left) * PT,
-              HEIGHT - (first.bottom - origin.top) * PT + descent,
-            ),
-          );
-          page.drawText(line, {
-            x: 0,
-            y: 0,
-            size,
-            font,
-            ...color(style.color),
-          });
-          page.pushOperators(popGraphicsState());
-        }
-        line = "";
-        first = null;
-      };
+      // 沿用浏览器逐字符的位置，避免 PDF 字体推进宽度与浏览器不一致，
+      // 造成数字间距异常或普通文字与加粗片段重叠。
+      let offset = 0;
       for (const character of node.data) {
         range.setStart(node, offset);
         offset += character.length;
         range.setEnd(node, offset);
-        if (character === "\n" || character === "\r") {
-          flush();
-          continue;
-        }
-        const rect = range.getBoundingClientRect();
-        if (!rect.width || !rect.height) continue;
-        if (first && Math.abs(first.top - rect.top) > 0.5) flush();
-        if (!first) first = rect;
-        line += character;
-        right = rect.right;
+        if (character === "\n" || character === "\r") continue;
+        const r = range.getBoundingClientRect();
+        if (!r.width || !r.height) continue;
+        page.drawText(character, {
+          x: (r.left - origin.left) * PT,
+          y: HEIGHT - (r.bottom - origin.top) * PT + descent,
+          size,
+          font,
+          ...color(style.color),
+        });
       }
-      flush();
     }
     clone.querySelectorAll("li").forEach((li) => {
       const style = getComputedStyle(li),
