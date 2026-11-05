@@ -82,19 +82,21 @@ export const Resume = forwardRef<HTMLDivElement, { doc: ResumeDocument }>(
                       </div>
                       {e.stack && (
                         <p className="stack">
-                          相关技术：
+                          <b>相关技术：</b>
                           <BoldText text={e.stack} />
                         </p>
                       )}
                       {e.description && (
                         <p>
-                          项目描述：
+                          <b>项目描述：</b>
                           <BoldText text={e.description} />
                         </p>
                       )}
                       {!!e.bullets.length && (
                         <>
-                          <p>主要工作：</p>
+                          <p>
+                            <b>主要工作：</b>
+                          </p>
                           <ul>
                             {e.bullets.map((b, i) => (
                               <li key={i}>
