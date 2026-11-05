@@ -1,3 +1,4 @@
+import { Field } from "./Field";
 import { choosePdfDestination, savePdf } from "./save";
 import {
   useCallback,
@@ -27,39 +28,6 @@ import {
 } from "./fit";
 import { Resume } from "./Resume";
 
-function Field({
-  label,
-  value,
-  onChange,
-  multiline = false,
-  ...props
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  multiline?: boolean;
-  placeholder?: string;
-}) {
-  return (
-    <label className="field">
-      <span>{label}</span>
-      {multiline ? (
-        <textarea
-          value={value}
-          rows={3}
-          onChange={(e) => onChange(e.target.value)}
-          {...props}
-        />
-      ) : (
-        <input
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-          {...props}
-        />
-      )}
-    </label>
-  );
-}
 function OrderButtons({
   index,
   count,

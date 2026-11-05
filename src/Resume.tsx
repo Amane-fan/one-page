@@ -1,3 +1,4 @@
+import { BoldText } from "./bold";
 import { forwardRef } from "react";
 import { githubUrl, type ResumeDocument } from "./model";
 
@@ -15,7 +16,11 @@ export const Resume = forwardRef<HTMLDivElement, { doc: ResumeDocument }>(
           <header className="resume-header">
             <div className="resume-identity">
               <h1>{profile.name || "姓名"}</h1>
-              {profile.school && <p className="school">{profile.school}</p>}
+              {profile.school && (
+                <p className="school">
+                  <BoldText text={profile.school} />
+                </p>
+              )}
               <div className="contact">
                 {profile.email && (
                   <span>
@@ -60,7 +65,9 @@ export const Resume = forwardRef<HTMLDivElement, { doc: ResumeDocument }>(
                 {s.kind === "list" ? (
                   <div className="resume-list">
                     {s.items.map((item, i) => (
-                      <p key={i}>{item}</p>
+                      <p key={i}>
+                        <BoldText text={item} />
+                      </p>
                     ))}
                   </div>
                 ) : (
@@ -73,14 +80,26 @@ export const Resume = forwardRef<HTMLDivElement, { doc: ResumeDocument }>(
                         </h3>
                         <time>{e.date}</time>
                       </div>
-                      {e.stack && <p className="stack">相关技术：{e.stack}</p>}
-                      {e.description && <p>项目描述：{e.description}</p>}
+                      {e.stack && (
+                        <p className="stack">
+                          相关技术：
+                          <BoldText text={e.stack} />
+                        </p>
+                      )}
+                      {e.description && (
+                        <p>
+                          项目描述：
+                          <BoldText text={e.description} />
+                        </p>
+                      )}
                       {!!e.bullets.length && (
                         <>
                           <p>主要工作：</p>
                           <ul>
                             {e.bullets.map((b, i) => (
-                              <li key={i}>{b}</li>
+                              <li key={i}>
+                                <BoldText text={b} />
+                              </li>
                             ))}
                           </ul>
                         </>

@@ -961,3 +961,35 @@ output {
     overflow: visible !important;
   }
 }
+
+.field-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 24px;
+  color: #555e58;
+}
+.bold-button {
+  font-size: 11px;
+  min-height: 28px;
+  padding: 2px 7px;
+  background: transparent;
+  border-color: transparent;
+  white-space: nowrap;
+}
+.bold-button b {
+  font-size: 14px;
+  margin-right: 3px;
+}
+.bold-button:disabled {
+  opacity: 0.45;
+}
+.field .format-hint {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.resume-content strong {
+  font-weight: 700;
+}
