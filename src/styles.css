@@ -736,7 +736,7 @@ output {
 }
 .resume-entry .stack {
   font-size: 0.95em;
-  color: #454e52;
+  color: inherit;
 }
 .resume-entry ul {
   padding: 0 0 0 15px;
